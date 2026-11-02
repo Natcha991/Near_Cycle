@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useState } from 'react';
 import CategoryFilter from './CategoryFilter';
+import DonationInfoPanel from './DonationInfoPanel';
 import RadiusFilter from './RadiusFilter';
 import { api } from '../../lib/api';
 
@@ -24,6 +25,33 @@ export default function HomeMapClient({
   const [locating, setLocating] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedDonation, setSelectedDonation] = useState(null);
+  const [selectedDetail, setSelectedDetail] = useState({ id: null, donation: null, error: '' });
+
+  // A popup closing only clears the panel when it belongs to the current selection,
+  // so switching markers does not blank the panel if the old popup closes late.
+  const handleSelect = useCallback((donation, closedId) => {
+    setSelectedDonation((current) => {
+      if (donation) return donation;
+      return current?.id === closedId ? null : current;
+    });
+  }, []);
+
+  const selectedId = selectedDonation?.id ?? null;
+
+  useEffect(() => {
+    if (!selectedId) return undefined;
+
+    let active = true;
+    api(`/api/donations/${selectedId}`)
+      .then((result) => {
+        if (active) setSelectedDetail({ id: selectedId, donation: result, error: '' });
+      })
+      .catch((requestError) => {
+        if (active) setSelectedDetail({ id: selectedId, donation: null, error: requestError.message || 'โหลดรายละเอียดไม่สำเร็จ' });
+      });
+    return () => { active = false; };
+  }, [selectedId]);
 
   useEffect(() => {
     if (clearReturnQuery) {
@@ -95,6 +123,10 @@ export default function HomeMapClient({
   const returnQuery = returnParams.toString();
   const mapReturnTo = returnQuery ? `/?${returnQuery}` : '/';
   const lowAccuracy = userAccuracy != null && userAccuracy > LOW_ACCURACY_METERS;
+  const detailMatches = selectedDetail.id === selectedId;
+  const selectedDetailHref = selectedId && (mapReturnTo === '/'
+    ? `/donations/${selectedId}`
+    : `/donations/${selectedId}?returnTo=${encodeURIComponent(mapReturnTo)}`);
 
   return (
     <main className="mapShell">
@@ -104,6 +136,7 @@ export default function HomeMapClient({
         userAccuracy={userAccuracy}
         radiusKm={radiusKm}
         returnTo={mapReturnTo}
+        onSelect={handleSelect}
       />
 
       <div className="mapSummary" aria-live="polite">
@@ -136,6 +169,18 @@ export default function HomeMapClient({
 
       <CategoryFilter value={category} onChange={setCategory} disabled={!userPosition} />
       <RadiusFilter value={radiusKm} onChange={setRadiusKm} disabled={!userPosition} locating={locating} />
+
+      {selectedDonation && (
+        <DonationInfoPanel
+          key={selectedDonation.id}
+          donation={selectedDonation}
+          detail={detailMatches ? selectedDetail.donation : null}
+          loading={!detailMatches}
+          error={detailMatches ? selectedDetail.error : ''}
+          detailHref={selectedDetailHref}
+          onClose={() => setSelectedDonation(null)}
+        />
+      )}
     </main>
   );
 }

@@ -3,6 +3,7 @@ import './globals.css';
 import './ux-foundation.css';
 import './navigation.css';
 import './map-ux.css';
+import './donation-info-panel.css';
 import './auth-form-ux.css';
 import './detail-navigation-ux.css';
 import './admin-ux.css';

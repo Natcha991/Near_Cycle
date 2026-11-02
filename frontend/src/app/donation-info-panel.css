@@ -1,0 +1,148 @@
+/* Donation info panel floating over the home map. Sits above map chips (510-520), below filters (620+). */
+.donationPanel {
+  --panel-top: max(140px, calc(env(safe-area-inset-top) + 126px));
+  position: absolute;
+  z-index: 530;
+  top: var(--panel-top);
+  left: max(20px, env(safe-area-inset-left));
+  width: min(360px, calc(100% - 40px));
+  max-height: calc(100dvh - var(--panel-top) - 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(132, 204, 22, .28);
+  border-radius: 32px;
+  background: rgba(217, 249, 157, .86);
+  color: var(--ui-ink);
+  box-shadow: var(--ui-shadow-lg);
+  backdrop-filter: blur(12px);
+}
+
+.donationPanelTopbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.donationPanelToggle { display: none; }
+.donationPanelClose {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .8);
+  color: var(--ui-muted);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Address card: white rounded block at the top, text anchored to the bottom like the reference. */
+.donationPanelStoreCard {
+  position: relative;
+  min-height: 150px;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+}
+.donationPanelCover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.donationPanelStoreText {
+  position: relative;
+  min-width: 0;
+  max-width: 72%;
+  display: grid;
+  gap: 3px;
+  padding: 10px 16px 10px 14px;
+  border-top-left-radius: 22px;
+  background: rgba(255, 255, 255, .94);
+  text-align: right;
+}
+.donationPanelStoreText span { color: var(--ui-muted); font-size: 10px; font-weight: 700; }
+.donationPanelStoreText p { margin: 0; color: var(--ui-text); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.donationPanelStoreText small { color: #3f6212; font-size: 11px; font-weight: 700; }
+
+.donationPanelTitle { margin: 4px 8px 0; font-size: 26px; font-weight: 800; line-height: 1.25; letter-spacing: -.01em; overflow-wrap: anywhere; }
+
+.donationPanelBody { display: flex; flex-direction: column; gap: 12px; }
+
+.donationPanelTags { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 4px; }
+.donationPanelTag { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+.donationPanelTag--paper { background: #bef264; color: #3f6212; }
+.donationPanelTag--plastic { background: #bae6fd; color: #1e40af; }
+.donationPanelTag--textile { background: #f0abfc; color: #701a75; }
+.donationPanelTag--metal { background: #e2e8f0; color: #334155; }
+.donationPanelTag--glass { background: #99f6e4; color: #115e59; }
+.donationPanelTag--electronics { background: #ddd6fe; color: #5b21b6; }
+.donationPanelTag--default { background: var(--ui-surface); color: #3f6212; }
+
+.donationPanelDetails,
+.donationPanelGallery {
+  padding: 16px 18px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: var(--ui-shadow-sm);
+}
+.donationPanelDetails h3 { margin: 0 0 8px; font-size: 18px; font-weight: 800; }
+.donationPanelDetails ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ui-text); font-size: 13px; line-height: 1.5; }
+.donationPanelDetails li { overflow-wrap: anywhere; }
+.donationPanelDetails li.isMuted { color: var(--ui-muted); }
+
+/* Gallery: heading on the left, portrait rounded photos scrolling to the right. */
+.donationPanelGallery { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: center; gap: 10px; padding-right: 10px; }
+.donationPanelGallery.isTextOnly { grid-template-columns: minmax(0, 1fr); }
+.donationPanelGalleryHead h3 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.25; }
+.donationPanelGalleryRow { display: flex; align-items: center; gap: 10px; min-width: 0; overflow-x: auto; padding: 4px 4px 6px; scroll-snap-type: x mandatory; }
+.donationPanelGalleryImage { flex: 0 0 auto; width: 104px; height: 140px; border-radius: 22px; object-fit: cover; scroll-snap-align: start; background: var(--ui-surface-soft); box-shadow: var(--ui-shadow-sm); }
+.donationPanelGalleryImage:nth-child(n + 2) { width: 84px; height: 112px; }
+.donationPanelImageFallback { display: grid; place-items: center; background: var(--ui-surface-soft); color: var(--ui-muted); font-size: 10px; text-align: center; }
+.donationPanelNote { margin: 6px 0 0; color: var(--ui-muted); font-size: 11px; line-height: 1.35; }
+.donationPanelNote.isError { color: var(--ui-danger); }
+
+.donationPanelAction { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-radius: 999px; background: #3f6212; color: #fff; font-size: 13px; font-weight: 740; text-decoration: none; }
+
+/* Laptop/tablet: bottom-centre filters can collide with the panel, so stop it above them. */
+@media (max-width: 1300px) {
+  .donationPanel { width: min(330px, calc(100% - 40px)); max-height: calc(100dvh - var(--panel-top) - 210px); }
+}
+
+@media (max-width: 1024px) {
+  .donationPanel { width: min(320px, 46vw); border-radius: 28px; }
+  .donationPanelTitle { font-size: 22px; }
+  .donationPanelGallery { grid-template-columns: minmax(0, 1fr); }
+  .donationPanelGalleryHead h3 br { display: none; }
+}
+
+/* Mobile: full-width card under the summary chip, collapsed to its header until expanded. */
+@media (max-width: 700px) {
+  .donationPanel {
+    --panel-top: max(120px, calc(env(safe-area-inset-top) + 108px));
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    width: auto;
+    max-height: calc(100dvh - var(--panel-top) - max(196px, calc(188px + env(safe-area-inset-bottom))));
+    gap: 10px;
+    padding: 12px;
+    border-radius: 26px;
+  }
+  .donationPanelTopbar { justify-content: space-between; }
+  .donationPanelToggle { display: inline-flex; align-items: center; min-height: 32px; padding: 0 14px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .8); color: #3f6212; font: inherit; font-size: 12px; font-weight: 740; cursor: pointer; }
+  .donationPanelTitle { font-size: 19px; }
+  .donationPanel:not(.isExpanded) .donationPanelBody { display: none; }
+  .donationPanelStoreCard { min-height: 120px; border-radius: 22px; }
+  .donationPanelStoreText { padding: 8px 12px; border-top-left-radius: 18px; }
+  .donationPanelDetails,
+  .donationPanelGallery { border-radius: 22px; padding: 14px; }
+  .donationPanelGalleryImage { width: 92px; height: 124px; }
+  .donationPanelGalleryImage:nth-child(n + 2) { width: 76px; height: 102px; }
+}
+
+@media (max-width: 430px) {
+  .donationPanel { --panel-top: max(170px, calc(env(safe-area-inset-top) + 158px)); }
+}

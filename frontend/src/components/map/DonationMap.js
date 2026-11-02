@@ -66,6 +66,7 @@ export default function DonationMap({
   userAccuracy = null,
   radiusKm,
   returnTo = '/',
+  onSelect,
 }) {
   const [selectedId, setSelectedId] = useState(null);
 
@@ -117,7 +118,10 @@ export default function DonationMap({
             position={[donation.latitude, donation.longitude]}
             icon={donationIcon(selected)}
             zIndexOffset={selected ? 500 : 0}
-            eventHandlers={{ click: () => setSelectedId(donation.id), popupclose: () => setSelectedId(null) }}
+            eventHandlers={{
+              click: () => { setSelectedId(donation.id); onSelect?.(donation); },
+              popupclose: () => { setSelectedId(null); onSelect?.(null, donation.id); },
+            }}
           >
             <Popup className="pawPopup" closeButton={false} minWidth={238}>
               <div className="popupCard">
